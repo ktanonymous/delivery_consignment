@@ -4,3 +4,4 @@ mysqlclient
 pymysql
 python-dotenv
 django-filter
+django-cors-headers
