@@ -25,7 +25,7 @@ def obtain_all_staions(bus_id, start_station, end_station):
         if flag == 1:
             tmp = {
                 "name": staion.name,
-                "time": staion.time
+                "time": staion.time.strftime("%Y-%m-%d %H:%M")
             }
             station_data.append(tmp)
 
