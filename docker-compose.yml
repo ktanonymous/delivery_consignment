@@ -1,0 +1,24 @@
+version: '3'
+services:
+  python3:
+    restart: always
+    build: .
+    container_name: 'python3'
+    working_dir: '/root/'
+    tty: true
+    volumes:
+      - ./opt:/root/opt
+    ports: 
+      - 8000:8000
+  mysql:
+        image: mysql:5.7
+        environment:
+            MYSQL_DATABASE: app
+            MYSQL_ROOT_PASSWORD: password
+            MYSQL_USER: user
+            MYSQL_PASSWORD: user_pass
+            TZ: Asia/Tokyo
+        ports:
+            - 3306:3306
+        volumes:
+            - ./.docker/mysql/data:/var/lib/mysql
