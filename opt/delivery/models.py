@@ -17,7 +17,7 @@ class CarryBus(models.Model):
     max_size = models.IntegerField()
 
 
-class Reservation(models.Model):
+class Baggage(models.Model):
     carry_bus = models.ForeignKey(CarryBus, on_delete=models.CASCADE)
     ride_flag = models.BooleanField()
     carry_flag = models.BooleanField()
