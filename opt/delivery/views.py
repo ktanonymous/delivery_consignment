@@ -69,7 +69,8 @@ def obtain_carriable_bus(request):
             "name": carriable_bus.bus.name,
             # 区間内のすべての駅の名前、時間の配列
             "station": obtain_all_staions(
-                carriable_bus.bus.id, carriable_bus.start_station, carriable_bus.end_station)
+                carriable_bus.bus.id, carriable_bus.start_station, carriable_bus.end_station),
+            "max_size": carriable_bus.max_size,
         }
         bus_data.append(tmp)
     
