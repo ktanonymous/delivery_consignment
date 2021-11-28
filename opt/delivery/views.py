@@ -6,8 +6,8 @@ from django.http import JsonResponse
 
 from datetime import datetime as dt
 
-from .models import Bus, BusStop, CarryBus, Baggage
-from .serializer import Baggageserializer, BusSerializer, CarryBusSerializer, BusStopSerializer
+from .models import Baggage, Bus, BusStop, CarryBus
+from .serializer import Baggageserializer, BusSerializer, BusStopSerializer, CarryBusSerializer
 
 
 # 区間内の駅の名前と時間を全て抽出する
@@ -149,15 +149,29 @@ def reserve_bus(request):
     serializer = Baggageserializer(data=baggage)
     if serializer.is_valid():
         serializer.save()
+        baggage_id = serializer.data.id
 
         data = {
             'bus_id': bus_id,
             'start_station': start_station,
-            'baggage_id': request.data['baggage_id'],
+            'baggage_id': baggage_id,
             'time': time,
         }
         return JsonResponse(data, status=201)
     return JsonResponse(serializer.errors, status=400)
+
+
+@api_view(['GET'])
+def sum_fee(request):
+    company = request.data['name']
+    company_buses = CarryBus.objects.filter(bus__name=company)
+    summation = 0
+    carried_baggage = Baggage.objects.filter(carry_bus__in=company_buses)
+    for baggage in carried_baggage:
+        summation += baggage.fee
+
+    return JsonResponse({"fee": summation}, status=201)
+
 
 # 配達が完了するとフラグを立てる
 def check_finish(request):
@@ -165,6 +179,7 @@ def check_finish(request):
     baggage_query = Baggage.object.get(pk="carry_flag")
     baggage_query.save()
     return JsonResponse({"message":"OK"}, status=200)
+
 
 # 荷物を受け取るとフラグを立てる
 def check_accept(request):
