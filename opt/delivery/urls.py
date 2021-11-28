@@ -7,6 +7,5 @@ urlpatterns = [
     path('show/', views.obtain_carriable_bus),
     path('reserve/', views.reserve_bus),
     path('accept/', views.check_accept),
-    path('finish/', views.check_finish,
-
+    path('finish/', views.check_finish),
 ]
