@@ -31,7 +31,9 @@ fetchCarriableData = async () => {
 
     // 企業名を表示
     let newCell = newRow.insertCell();
-    let newButton = document.createElement('button');
+    let newButton = document.createElement('input');
+    newButton.type = 'button';
+    newButton.value = '予約する';
     newButton.className = 'link-btn';
     newButton.onclick = function () {
       location.href = '/public/reserve.html';
