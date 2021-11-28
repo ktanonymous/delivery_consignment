@@ -1,0 +1,16 @@
+body {
+    background-image: url(../img/background.jpg);
+    background-size: cover;
+}
+
+#table {
+    text-align: center;
+    width: 80%;
+    overflow-y: scroll;
+    position: relative;
+    left: 10%;
+}
+
+.button_header {
+    width: 70px;
+}
