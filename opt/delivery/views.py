@@ -6,7 +6,7 @@ from django.http import JsonResponse
 
 from datetime import datetime as dt
 
-from .models import Bus, BusStop, CarryBus
+from .models import Bus, BusStop, CarryBus, Baggage
 from .serializer import Baggageserializer, BusSerializer, CarryBusSerializer, BusStopSerializer
 
 
@@ -163,11 +163,11 @@ def check_finish(request):
     carry_query = request.data['baggage_id']
     baggage_query = Baggage.object.get(pk="carry_flag")
     baggage_query.save()
-    return JsonResponse("message":"OK", {status=200})
+    return JsonResponse({"message":"OK"}, status=200)
 
 # 荷物を受け取るとフラグを立てる
 def check_accept(request):
     accept_query = request.data['baggage_id']
     baggage_query = Baggage.object.get(pk="ride_flag")
     baggage_query.save()
-    return JsonResponse("message":"OK", {status=200})
+    return JsonResponse({"message":"OK"}, status=200)
