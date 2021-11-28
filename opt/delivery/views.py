@@ -125,7 +125,7 @@ def reserve_bus(request):
         return JsonResponse(resp, status=404)
 
     size = request.data['size']
-    if size > carry_bus.max_size:
+    if int(size) > carry_bus.max_size:
         resp = {'message': 'over max size'}
         return JsonResponse(resp, status=404)
 
@@ -133,12 +133,8 @@ def reserve_bus(request):
     end_station = request.data['end_station']
 
     # NOTE: 配送区間外の場合は無視？？？
-    time = request.data['time']
-    start_time = dt.strptime(time, '%Y-%m-%d %H:%M:%S%z')
-    carry_bus_stops = BusStop.objects.filter(name=end_station,
-                                             time__gt=start_time, bus=bus_id)
-    end_time = carry_bus_stops.order_by('time').first().time
-    fee = size * ((end_time - start_time).seconds // 60)
+    start_time = request.data['start_time']
+    fee = int(size) * len(request.data['station_data'])
 
     baggage = {
         'carry_bus': carry_bus.id,
@@ -149,13 +145,15 @@ def reserve_bus(request):
     serializer = Baggageserializer(data=baggage)
     if serializer.is_valid():
         serializer.save()
-        baggage_id = serializer.data.id
+        print(serializer.data)
+        print(serializer.data['id'])
+        baggage_id = serializer.data['id']
 
         data = {
             'bus_id': bus_id,
             'start_station': start_station,
             'baggage_id': baggage_id,
-            'time': time,
+            'time': start_time,
         }
         return JsonResponse(data, status=201)
     return JsonResponse(serializer.errors, status=400)
