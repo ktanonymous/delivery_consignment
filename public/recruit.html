@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>Show All</title>
+</head>
+<body>
+  <script src="js/recruit.js"></script>
+  <h1>配達代行募集</h1>
+  <form action="" name="recruitForm">
+    <label>
+      name
+      <input type="text" name="name">
+    </label>
+    <label>
+      start_station
+      <input type="text" name="start_station">
+    </label>
+    <label>
+      end_station
+      <input type="text" name="end_station">
+    </label>
+    <label>
+      start_time
+      <input type="datetime-local" name="start_time">
+    </label>
+    <label>
+      end_time
+      <input type="datetime-local" name="end_time">
+    </label>
+    <label>
+      max_size
+      <input type="number" name="max_size">
+    </label>
+    <button type="button" id="submit" onclick="recruitCheck();">送信</button>
+  </form>
+</body>
+</html>
