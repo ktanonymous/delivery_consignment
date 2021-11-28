@@ -188,6 +188,6 @@ def check_finish(request):
 def check_accept(request):
     baggage_id = request.data['baggage_id']
     baggage_query = Baggage.objects.get(pk=baggage_id)
-    baggage_query.carry_flag = True
+    baggage_query.ride_flag = True
     baggage_query.save()
     return JsonResponse({"message":"OK"}, status=200)
