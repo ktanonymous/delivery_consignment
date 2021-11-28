@@ -36,6 +36,8 @@ def obtain_all_staions(bus_id, start_station, end_station):
     return station_data
 
 # 駅名、時間から時刻表のクエリを抽出
+
+
 def obtain_busstop(station, time):
     if not BusStop.objects.filter(name=station, time=time).exists():
         return 0
@@ -86,7 +88,7 @@ def obtain_carriable_bus(request):
             # 区間内のすべての駅の名前、時間の配列
             "station": obtain_all_staions(
                 carriable_bus.start_station.bus_id,
-                carriable_bus.start_station.name, 
+                carriable_bus.start_station.name,
                 carriable_bus.end_station.name
             ),
             "max_size": carriable_bus.max_size,
@@ -99,9 +101,9 @@ def obtain_carriable_bus(request):
 @api_view(['POST'])
 @csrf_exempt
 def reserve_bus(request):
-    bus = request.data['bus_id']
+    bus_id = request.data['bus_id']
     try:
-        carry_bus = CarryBus.objects.get(bus=bus)
+        carry_bus = CarryBus.objects.get(bus=bus_id)
     except CarryBus.DoesNotExist:
         resp = {'message': 'invalid bus id is requested'}
         return JsonResponse(resp, status=404)
@@ -115,9 +117,10 @@ def reserve_bus(request):
     end_station = request.data['end_station']
 
     # NOTE: 配送区間外の場合は無視？？？
-    start_time = dt.strptime(request.data['time'], '%Y-%m-%d %H:%M:%S%z')
+    time = request.data['time']
+    start_time = dt.strptime(time, '%Y-%m-%d %H:%M:%S%z')
     carry_bus_stops = BusStop.objects.filter(name=end_station,
-                                             time__gt=start_time, bus=bus)
+                                             time__gt=start_time, bus=bus_id)
     end_time = carry_bus_stops.order_by('time').first().time
     fee = size * ((end_time - start_time).seconds // 60)
 
@@ -130,5 +133,12 @@ def reserve_bus(request):
     serializer = Baggageserializer(data=baggage)
     if serializer.is_valid():
         serializer.save()
-        return JsonResponse(serializer.data, status=201)
+
+        data = {
+            'bus_id': bus_id,
+            'start_station': start_station,
+            'baggage_id': request.data['baggage_id'],
+            'time': time,
+        }
+        return JsonResponse(data, status=201)
     return JsonResponse(serializer.errors, status=400)
