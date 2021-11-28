@@ -7,7 +7,7 @@ from django.http import JsonResponse
 from datetime import datetime as dt
 
 from .models import Baggage, Bus, BusStop, CarryBus
-from .serializer import Baggageserializer, BusSerializer, CarryBusSerializer
+from .serializer import Baggageserializer, BusSerializer, BusStopSerializer, CarryBusSerializer
 
 
 # 区間内の駅の名前と時間を全て抽出する
@@ -48,11 +48,25 @@ def obtain_busstop(station, time):
 
 @csrf_exempt
 @api_view(['POST'])
+def set_time_table(request):
+    serializer = BusStopSerializer(data={
+        "name": request.data["name"],
+        "time": request.data["time"],
+        "bus": request.data["bus_id"],
+    })
+    if serializer.is_valid():
+        serializer.save()
+        return JsonResponse(serializer.data, status=201)
+    return JsonResponse(serializer.errors, status=400)
+
+
+@csrf_exempt
+@api_view(['POST'])
 def register_bus(request):
     start_station = request.data['start_station']
     end_station = request.data['end_station']
-    start_time = dt.strptime(request.data['start_time'], '%Y-%m-%d %H:%M:%S%z')
-    end_time = dt.strptime(request.data['end_time'], '%Y-%m-%d %H:%M:%S%z')
+    start_time = request.data['start_time']
+    end_time = request.data['end_time']
 
     # 最初の駅のクエリをとる
     start_time_table = obtain_busstop(start_station, start_time)
@@ -64,6 +78,7 @@ def register_bus(request):
         return JsonResponse({"message": "not found"}, status=400)
 
     serializer = CarryBusSerializer(data={
+        "bus": start_time_table.bus.id,
         "start_station": start_time_table.id,
         "end_station": end_time_table.id,
         "max_size": request.data['max_size']
@@ -84,6 +99,7 @@ def obtain_carriable_bus(request):
     for carriable_bus in carriable_bus_query:
         bus_company_name = Bus.objects.get(id=carriable_bus.start_station.bus_id)
         tmp = {
+            "carry_bus_id": carriable_bus.id,
             "name": bus_company_name.name,
             # 区間内のすべての駅の名前、時間の配列
             "station": obtain_all_staions(
@@ -155,3 +171,19 @@ def sum_fee(request):
         summation += baggage.fee
 
     return JsonResponse({"fee": summation}, status=201)
+
+
+# 配達が完了するとフラグを立てる
+def check_finish(request):
+    carry_query = request.data['baggage_id']
+    baggage_query = Baggage.object.get(pk="carry_flag")
+    baggage_query.save()
+    return JsonResponse({"message":"OK"}, status=200)
+
+
+# 荷物を受け取るとフラグを立てる
+def check_accept(request):
+    accept_query = request.data['baggage_id']
+    baggage_query = Baggage.object.get(pk="ride_flag")
+    baggage_query.save()
+    return JsonResponse({"message":"OK"}, status=200)
