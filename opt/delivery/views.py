@@ -35,20 +35,35 @@ def obtain_all_staions(bus_id, start_station, end_station):
 
     return station_data
 
+# 駅名、時間から時刻表のクエリを抽出
+def obtain_busstop(station, time):
+    if not BusStop.objects.filter(name=station, time=time).exists():
+        return 0
+
+    time_table = BusStop.objects.get(name=station, time=time)
+    return time_table
+
 
 @csrf_exempt
 @api_view(['POST'])
 def register_bus(request):
     start_station = request.data['start_station']
-    time = dt.strptime(request.data['time'], '%Y-%m-%d %H:%M:%S%z')
-    if not BusStop.objects.filter(name=start_station, time=time).exists():
+    end_station = request.data['end_station']
+    start_time = dt.strptime(request.data['start_time'], '%Y-%m-%d %H:%M:%S%z')
+    end_time = dt.strptime(request.data['end_time'], '%Y-%m-%d %H:%M:%S%z')
+
+    # 最初の駅のクエリをとる
+    start_time_table = obtain_busstop(start_station, start_time)
+    if not start_time_table:
+        return JsonResponse({"message": "not found"}, status=400)
+    # 最後の駅のクエリをとる
+    end_time_table = obtain_busstop(end_station, end_time)
+    if not end_time_table:
         return JsonResponse({"message": "not found"}, status=400)
 
-    time_table = BusStop.objects.get(name=start_station, time=time)
     serializer = CarryBusSerializer(data={
-        "bus": time_table.bus.id,
-        "start_station": start_station,
-        "end_station": request.data['end_station'],
+        "start_station": start_time_table.id,
+        "end_station": end_time_table.id,
         "max_size": request.data['max_size']
     })
     if serializer.is_valid():
@@ -65,11 +80,15 @@ def obtain_carriable_bus(request):
     carriable_bus_query = CarryBus.objects.exclude(max_size=0)
     bus_data = []
     for carriable_bus in carriable_bus_query:
+        bus_company_name = Bus.objects.get(id=carriable_bus.start_station.bus_id)
         tmp = {
-            "name": carriable_bus.bus.name,
+            "name": bus_company_name.name,
             # 区間内のすべての駅の名前、時間の配列
             "station": obtain_all_staions(
-                carriable_bus.bus.id, carriable_bus.start_station, carriable_bus.end_station),
+                carriable_bus.start_station.bus_id,
+                carriable_bus.start_station.name, 
+                carriable_bus.end_station.name
+            ),
             "max_size": carriable_bus.max_size,
         }
         bus_data.append(tmp)
