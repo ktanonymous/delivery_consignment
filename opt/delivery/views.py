@@ -99,6 +99,7 @@ def obtain_carriable_bus(request):
     for carriable_bus in carriable_bus_query:
         bus_company_name = Bus.objects.get(id=carriable_bus.start_station.bus_id)
         tmp = {
+            "carry_bus_id": carriable_bus.id,
             "name": bus_company_name.name,
             # 区間内のすべての駅の名前、時間の配列
             "station": obtain_all_staions(
