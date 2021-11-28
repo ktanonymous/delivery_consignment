@@ -60,5 +60,3 @@ fetchCarriableData = async () => {
     newCell.appendChild(newText);
   }
 };
-
-fetchCarriableData();
