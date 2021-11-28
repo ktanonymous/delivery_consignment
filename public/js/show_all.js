@@ -33,7 +33,10 @@ fetchCarriableData = async () => {
     let newCell = newRow.insertCell();
     let newButton = document.createElement('button');
     newButton.className = 'link-btn';
-    newButton.onclick = function () {location.href = '/public/reserve.html';};
+    newButton.onclick = function () {
+      location.href = '/public/reserve.html';
+      window.localStorage.setItem('carriable_bus', JSON.stringify(stationData));
+    };
     newCell.appendChild(newButton);
 
     // 企業名を表示
