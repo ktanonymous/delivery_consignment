@@ -12,7 +12,7 @@ class BusSerializer(serializers.ModelSerializer):
 class CarryBusSerializer(serializers.ModelSerializer):
     class Meta:
         model = CarryBus
-        fields = ['id', 'bus', 'start_station', 'end_station', 'max_size']
+        fields = ['id', 'start_station', 'end_station', 'max_size']
 
 
 class Baggageserializer(serializers.ModelSerializer):

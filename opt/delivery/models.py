@@ -12,7 +12,6 @@ class BusStop(models.Model):
 
 
 class CarryBus(models.Model):
-    bus = models.ForeignKey(Bus, on_delete=models.CASCADE)
     start_station = models.ForeignKey(BusStop, related_name='start_station',
                                       on_delete=models.CASCADE)
     end_station = models.ForeignKey(BusStop, related_name='end_station',
