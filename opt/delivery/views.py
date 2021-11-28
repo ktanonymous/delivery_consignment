@@ -157,3 +157,17 @@ def reserve_bus(request):
         }
         return JsonResponse(data, status=201)
     return JsonResponse(serializer.errors, status=400)
+
+# 配達が完了するとフラグを立てる
+def check_finish(request):
+    carry_query = request.data['baggage_id']
+    baggage_query = Baggage.object.get(pk="carry_flag")
+    baggage_query.save()
+    return JsonResponse("message":"OK", {status=200})
+
+# 荷物を受け取るとフラグを立てる
+def check_accept(request):
+    accept_query = request.data['baggage_id']
+    baggage_query = Baggage.object.get(pk="ride_flag")
+    baggage_query.save()
+    return JsonResponse("message":"OK", {status=200})
