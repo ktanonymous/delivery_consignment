@@ -24,4 +24,4 @@ class Baggageserializer(serializers.ModelSerializer):
 
     class Meta:
         model = Baggage
-        fields = ['carry_bus', 'ride_flag', 'carry_flag', 'fee']
+        fields = ['id', 'carry_bus', 'ride_flag', 'carry_flag', 'fee']
