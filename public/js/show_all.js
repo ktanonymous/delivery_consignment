@@ -27,9 +27,17 @@ fetchCarriableData = async () => {
   for (let i = 0; i < bus.length; i++) {
     let newRow = table.insertRow();
     const stationData = bus[i];
+    console.log(stationData);
 
     // 企業名を表示
     let newCell = newRow.insertCell();
+    let newButton = document.createElement('button');
+    newButton.className = 'link-btn';
+    newButton.onclick = function () {location.href = '/public/reserve.html';};
+    newCell.appendChild(newButton);
+
+    // 企業名を表示
+    newCell = newRow.insertCell();
     let newText = document.createTextNode(stationData['name']);
     newCell.appendChild(newText);
 
@@ -60,3 +68,8 @@ fetchCarriableData = async () => {
     newCell.appendChild(newText);
   }
 };
+
+function myRedirect(carrybusId) {
+  location.href = '/public/reserve.html';
+  console.log(carrybusId);
+}
