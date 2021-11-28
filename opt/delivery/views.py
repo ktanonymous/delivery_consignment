@@ -161,10 +161,8 @@ def reserve_bus(request):
 
 @api_view(['GET'])
 def sum_fee(request):
-    company = request.data['name']
-    company_buses = CarryBus.objects.filter(bus__name=company)
     summation = 0
-    carried_baggage = Baggage.objects.filter(carry_bus__in=company_buses)
+    carried_baggage = Baggage.objects.all()
     for baggage in carried_baggage:
         summation += baggage.fee
 
